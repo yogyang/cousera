@@ -96,6 +96,19 @@ class CodecsSuite
     checkProperty(Prop.forAll(peopleGenerator)(people => encodeAndThenDecodeProp(Contacts(people))))
   }
 
+  test("encodefor option") {
+    val s = Some(1)
+    val encoder = implicitly[Encoder[Option[Int]]]
+    assert(encoder.encode(s) == Json.Num(1))
+    assert(encoder.encode(None) == Json.Null)
+    
+    val e2 = implicitly[Encoder[Option[Contacts]]]
+    val contacts = Contacts(List(Person("Alice", 42)))
+    val json = Json.Obj(Map("people" ->
+      Json.Arr(List(Json.Obj(Map("name" -> Json.Str("Alice"), "age" -> Json.Num(42)))))
+    ))
+    assert(e2.encode(Some(contacts)) == json)
+  }
 
 trait TestEncoders extends EncoderFallbackInstance
 
